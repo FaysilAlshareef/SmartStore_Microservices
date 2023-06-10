@@ -193,7 +193,7 @@ namespace SmartStore.ShoppingCartAPI.Controllers
                         _response.DisplayMessage = "Coupon discount amount has been changed, please confirm";
 
                     }
-                    if (coupon.NumberOfCoupon== coupon.NumberOfUsedCoupon)
+                    if (coupon.NumberOfCoupon == coupon.NumberOfUsedCoupon)
                     {
                         _response.IsSuccess = false;
                         _response.ErrorMessages.Add("Coupon Has Expired, please confirm");
@@ -203,12 +203,12 @@ namespace SmartStore.ShoppingCartAPI.Controllers
 
                     if (!_response.IsSuccess)
                         return _response;
-                    
+
                 }
                 checkoutMessageDto.CartDetails = cartDto.CartDetails;
                 _response.Result = cartDto;
                 // Logic Code to Add message to process order via azure service bus
-                checkoutMessageDto.TopicName = _configuration["CheckoutMessageTopic"];
+                checkoutMessageDto.TopicName = _configuration["CheckoutMessageQueue"];
                 var message = new List<MessageBus.BaseMessage>();
                 message.Add(checkoutMessageDto);
                 await _messageBus.PublishMessage(message);

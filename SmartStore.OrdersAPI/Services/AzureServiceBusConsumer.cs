@@ -17,6 +17,7 @@ namespace SmartStore.OrdersAPI.Services
         private readonly IConfiguration _configuration;
         private readonly string _serviceBusConnectionString;
         private readonly string _checkoutMessageTopic;
+        private readonly string _checkoutMessageQueue;
         private readonly string _checkoutMessageSubscription;
         private readonly string _paymentUpdateSubscription;
         private readonly string _paymentUpdateTopic;
@@ -33,25 +34,28 @@ namespace SmartStore.OrdersAPI.Services
             _messageBus = messageBus;
             _configuration = configuration;
             _serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString");
-            _checkoutMessageTopic = _configuration.GetValue<string>("CheckoutMessageTopic");
+            //_checkoutMessageTopic = _configuration.GetValue<string>("CheckoutMessageTopic");
+            _checkoutMessageQueue = _configuration.GetValue<string>("CheckoutMessageQueue");
             _checkoutMessageSubscription = _configuration.GetValue<string>("CheckoutMessageSubscription");
             _paymentUpdateSubscription = _configuration.GetValue<string>("PaymentUpdateSubscription");
             _paymentUpdateTopic = _configuration.GetValue<string>("PaymentUpdateTopic");
             _paymentRequestTopic = _configuration.GetValue<string>("PaymentRequestTopic");
             var client = new ServiceBusClient(_serviceBusConnectionString);
-            _checkoutProcessor = client.CreateProcessor(_checkoutMessageTopic, _checkoutMessageSubscription);
+            //_checkoutProcessor = client.CreateProcessor(_checkoutMessageTopic, _checkoutMessageSubscription);
+            _checkoutProcessor = client.CreateProcessor(_checkoutMessageQueue);
+
             _paymentUpdateProcessor = client.CreateProcessor(_paymentUpdateTopic, _paymentUpdateSubscription);
-      
+
         }
         public async Task Start()
         {
             _checkoutProcessor.ProcessMessageAsync += OnCheckoutMessageReceived;
-            _checkoutProcessor.ProcessErrorAsync += ErrorHandler;            
+            _checkoutProcessor.ProcessErrorAsync += ErrorHandler;
             await _checkoutProcessor.StartProcessingAsync();
 
             _paymentUpdateProcessor.ProcessMessageAsync += OnPaymentUpdateMessageReceived;
             _paymentUpdateProcessor.ProcessErrorAsync += ErrorHandler;
-            
+
             await _paymentUpdateProcessor.StartProcessingAsync();
         }
 
@@ -60,7 +64,7 @@ namespace SmartStore.OrdersAPI.Services
         {
             await _checkoutProcessor.StopProcessingAsync();
             await _checkoutProcessor.DisposeAsync();
-            
+
             await _paymentUpdateProcessor.StopProcessingAsync();
             await _paymentUpdateProcessor.DisposeAsync();
         }
@@ -81,7 +85,7 @@ namespace SmartStore.OrdersAPI.Services
             try
             {
                 await _orderRepository.UpdateOrderPaymentStatus(paymentUpdateMessage.OrderId, paymentUpdateMessage.Status);
-                
+
                 await args.CompleteMessageAsync(args.Message);
             }
             catch (Exception)
@@ -134,13 +138,13 @@ namespace SmartStore.OrdersAPI.Services
                 await _orderRepository.AddOrder(orderHeader);
                 var paymentRequestMessageDto = new PaymentRequestMessageDto()
                 {
-                    Name=$"{orderHeader.FirstName} {orderHeader.LastName}",
-                    Email=orderHeader.Email,
+                    Name = $"{orderHeader.FirstName} {orderHeader.LastName}",
+                    Email = orderHeader.Email,
                     CardNumber = orderHeader.CardNumber,
-                    CVV=orderHeader.CVV,
-                    ExpiryMonthYear=orderHeader.ExpiryMonthYear,    
-                    OrderId=orderHeader.OrderHeaderId,
-                    OrderTotal=orderHeader.OrderTotal,
+                    CVV = orderHeader.CVV,
+                    ExpiryMonthYear = orderHeader.ExpiryMonthYear,
+                    OrderId = orderHeader.OrderHeaderId,
+                    OrderTotal = orderHeader.OrderTotal,
                     OrderDetails = orderHeader.OrderDetails,
                     TopicName = _paymentRequestTopic,
                 };
@@ -148,7 +152,7 @@ namespace SmartStore.OrdersAPI.Services
                 {
                     var paymentMessage = new List<MessageBus.BaseMessage>();
                     paymentMessage.Add(paymentRequestMessageDto);
-                    await _messageBus.PublishMessage(paymentMessage); 
+                    await _messageBus.PublishMessage(paymentMessage);
                     await args.CompleteMessageAsync(args.Message);
                 }
                 catch (Exception)

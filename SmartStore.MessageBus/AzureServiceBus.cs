@@ -11,7 +11,7 @@ namespace SmartStore.MessageBus
 {
     public class AzureServiceBus : IMessageBus
     {
-        private string connectionString = "Endpoint=sb://storeservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=hXSY4DlcmPN4govrfk3yCBmA70t6BhkvW+ASbCGfwH0=";
+        private string connectionString = "Endpoint=sb://smartstoreservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=mUUO+i/PGy1mBTIBW1FzWMHSQF+JntW98+ASbIbSEmM=";
 
         public async Task PublishMessage(IEnumerable<BaseMessage> messages)
         {
@@ -35,7 +35,7 @@ namespace SmartStore.MessageBus
                 await sender.SendMessageAsync(finalMessage);
 
             }
-           
+
             await client.DisposeAsync();
         }
     }
