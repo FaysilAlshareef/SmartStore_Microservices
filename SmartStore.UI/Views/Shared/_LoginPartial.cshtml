@@ -1,0 +1,33 @@
+﻿@inject IHttpContextAccessor httpContextAccessor
+
+<ul class="navbar-nav flex-grow-1 justify-content-end">
+    @if (User.Identity.IsAuthenticated)
+    {
+
+        <li class="nav-item" style="position:relative;">
+            <a class="nav-link text-white AppFont me-sm-4"
+           asp-controller="Cart" asp-action="CartIndex">
+                <i class="fas fa-shopping-cart text-white "></i>
+                <span style="position:absolute;bottom:27px;font-size:15px;"
+                      class="badge rounded-pill bg-dark py-1">
+                    @((httpContextAccessor.HttpContext.Session.GetInt32("count")) ?? 0)
+                </span>
+            </a>
+        </li>
+        <li class="nav-item ">
+            <a class="nav-link text-white AppFont" href="#">@User.Identity.Name.ToUpper()</a>
+        </li>
+        <li class="nav-item ">
+            <a class="nav-link  text-white AppFont" asp-action="Logout" asp-controller="Home">Logout</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item ">
+            <a class="nav-link  text-white AppFont" asp-action="Login" asp-controller="Home">Login</a>
+        </li>
+        <li class="nav-item ">
+            <a class="nav-link  text-white AppFont" asp-action="Register" asp-controller="Home">Register</a>
+        </li>
+    }
+</ul>

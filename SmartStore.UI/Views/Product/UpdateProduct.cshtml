@@ -1,0 +1,27 @@
+﻿@model SmartStore.UI.Dtos.Products.ProductDto
+
+@{
+    ViewData["Title"] = "UpdateProduct";
+}
+
+
+<form asp-action="UpdateProduct" enctype="multipart/form-data">
+    <input asp-for="Id" hidden />
+    <div class="container">
+        <h2 class="text-dark">Update Product</h2>
+
+        <hr />
+        <div class="row">
+          
+            <partial name="PartialViews/CreateUpdateProductPartialView" />
+            <div class="col-5">
+                <input type="submit"  value="Update" class="btn btn-primary form-control" />
+            </div>
+        </div>
+        
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

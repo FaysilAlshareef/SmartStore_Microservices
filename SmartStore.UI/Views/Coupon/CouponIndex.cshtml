@@ -1,0 +1,81 @@
+﻿@using SmartStore.UI.Dtos.Coupon
+@model IEnumerable<CouponDto>
+
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="container p-2 ">
+        <div class="row pb-2">
+            <div class="col">
+                <h2 class="text-Dark ">Coupons List</h2>
+            </div>
+            <div class="col text-end pt-2">
+                <a asp-action="CreateCoupon" class="btn btn-outline-dark"><i class="fa-solid fa-plus"></i> Create New Coupon</a>
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Coupon Code
+                    </th>
+                    <th class="text-center">
+                        Discount Amount
+                    </th>
+                    <th class="text-center">
+                        Number Of Coupon
+                    </th>
+                    <th class="text-center">
+                        Number Of Used Coupon
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.CouponCode
+                        </td>
+                        <td class="text-center" id="discountAmount">
+                            @item.DiscountAmount
+                        </td>
+                        <td class="text-center">
+                            &nbsp;&nbsp;<a asp-action="Decrease"
+                                   asp-route-CouponId="@item.CouponId" class="btn btn-outline-dark">
+                                <i class="fas fa-minus"></i>
+                            </a>&nbsp;&nbsp;
+                            @item.NumberOfCoupon
+                            &nbsp;&nbsp;<a asp-action="Increase"
+                                   asp-route-CouponId="@item.CouponId" class="btn btn-outline-dark">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            @item.NumberOfUsedCoupon
+                        </td>
+                        <td class="d-flex justify-content-end">
+
+                            <a asp-action="DeleteCoupon" class="btn btn-danger" asp-route-couponCode="@item.CouponCode">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+}
+else
+{
+    <h1 class="text-center text-danger pt-5">
+        <i class="fa-solid fa-ban fa-2xl text-center"></i>
+    </h1>
+
+    <h1 class="text-center p-4">
+        You are not authorized to access this page!
+    </h1>
+}
+

@@ -1,0 +1,35 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.AppFont {
+    font-size: 20px;
+    
+    font-family: 'Poppins', sans-serif;
+    /*'Poppins', sans-serif*/
+}
+
+.mainColor {
+    background-color: #143a51;
+    color:white;
+    
+}
+.Checkout-btn:hover {
+    background-color: rgba(20, 58, 81,0.5);
+    color: white;
+}
