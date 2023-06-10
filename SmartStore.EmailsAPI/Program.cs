@@ -21,17 +21,18 @@ namespace SmartStore.EmailsAPI
 
             // Add services to the container.
             builder.Services.AddDbContext<EmailDbContext>(options => options.UseSqlServer(connectionString));
-            builder.Services.AddScoped<IEmailRepository, EmailRepository>();
+            builder.Services.AddControllers();
+
             var OptionBuilder = new DbContextOptionsBuilder<EmailDbContext>();
             OptionBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton(new EmailRepository(OptionBuilder.Options));
             builder.Services.AddSingleton<SmartStore.EmailsAPI.Services.IAzureServiceBusConsumer, AzureServiceBusConsumer>();
 
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
