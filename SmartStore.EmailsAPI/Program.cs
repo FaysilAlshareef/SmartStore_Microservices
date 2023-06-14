@@ -29,8 +29,8 @@ namespace SmartStore.EmailsAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddSingleton(new EmailRepository(OptionBuilder.Options));
             builder.Services.AddSingleton<SmartStore.EmailsAPI.Services.IAzureServiceBusConsumer, AzureServiceBusConsumer>();
+            builder.Services.AddSingleton(new EmailRepository(OptionBuilder.Options));
 
 
 

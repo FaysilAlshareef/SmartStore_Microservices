@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using SmartStore.UI.Services;
 using SmartStore.UI.Services.Interfaces;
 
@@ -13,17 +14,20 @@ namespace SmartStore.UI
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddHttpContextAccessor();
-            
+
             builder.Services.AddHttpClient<IProductService, ProductService>();
             builder.Services.AddHttpClient<ICartService, CartService>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<ICouponService, CouponService>();
+            var blobConnection = builder.Configuration["BlobConnection"];
+            builder.Services.AddSingleton(x => new BlobServiceClient(blobConnection));
 
             SD.ProductsApiUrl = builder.Configuration["ApiUrls:ProductsApi"];
             SD.ShoppingCartApiUrl = builder.Configuration["ApiUrls:ShoppingCartApi"];
             SD.CouponApiUrl = builder.Configuration["ApiUrls:CouponApi"];
-            
+
+            builder.Services.AddSingleton<IBlobService, BlobService>();
 
             builder.Services.AddAuthentication(opt =>
             {

@@ -12,7 +12,7 @@ namespace SmartStore.EmailsAPI.Services
 {
     public class AzureServiceBusConsumer : IAzureServiceBusConsumer
     {
-        private readonly IEmailRepository _emailRepository;
+        private readonly EmailRepository _emailRepository;
         private readonly IConfiguration _configuration;
         private readonly string _serviceBusConnectionString;
 
@@ -22,7 +22,7 @@ namespace SmartStore.EmailsAPI.Services
         private readonly ServiceBusProcessor _emailProcessor;
 
         public AzureServiceBusConsumer(
-            IEmailRepository emailRepository,
+            EmailRepository emailRepository,
             IConfiguration configuration)
         {
             _emailRepository = emailRepository;

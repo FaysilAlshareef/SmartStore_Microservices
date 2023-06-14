@@ -11,10 +11,12 @@ namespace SmartStore.UI.Controllers
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
+        private readonly IBlobService _blobService;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IBlobService blobService)
         {
             _productService = productService;
+            _blobService = blobService;
         }
         public async Task<IActionResult> Index()
         {
@@ -40,10 +42,13 @@ namespace SmartStore.UI.Controllers
             if (ModelState.IsValid)
             {
                 var accessToken = await HttpContext.GetTokenAsync("access_token");
-
+                var imageUrl = await _blobService
+                                    .UploadBlob(productDto.Image.FileName, productDto.Image, "images");
+                productDto.PictureUrl = imageUrl;
                 var response = await _productService.CreateAsync<ResponseDto>(productDto, accessToken);
                 if (response != null && response.IsSuccess)
                 {
+
                     return RedirectToAction("Index");
                 }
             }
@@ -103,6 +108,13 @@ namespace SmartStore.UI.Controllers
             var response = await _productService.DeleteAsync<ResponseDto>(productDto.Id, accessToken);
             if (response != null && response.IsSuccess)
             {
+                // Delete blob
+                if (productDto.PictureUrl.Contains("/"))
+                {
+                    var pos = productDto.PictureUrl.LastIndexOf("/") + 1;
+                    var blobName = productDto.PictureUrl[pos..];
+                    await _blobService.DeleteBlob(blobName, "images");
+                }
                 return RedirectToAction("Index");
             }
 

@@ -9,12 +9,12 @@ namespace SmartStore.ProductsAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         private readonly IProductRepository _productRepository;
         private ProductResponseDto _responseDto;
 
-        public ProductController(IProductRepository productRepository)
+        public ProductsController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
             _responseDto = new ProductResponseDto();

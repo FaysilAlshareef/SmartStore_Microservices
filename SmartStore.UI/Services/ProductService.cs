@@ -15,10 +15,10 @@ namespace SmartStore.UI.Services
         {
             return await SendAsync<T>(new ApiRequest()
             {
-                ApiType=SD.ApiType.POST,
+                ApiType = SD.ApiType.POST,
                 Data = productDto,
-                ApiUrl= $"{SD.ProductsApiUrl}/api/product/",
-                AccessToken=token                
+                ApiUrl = $"{SD.ProductsApiUrl}/api/products",
+                AccessToken = token
             });
         }
 
@@ -26,8 +26,8 @@ namespace SmartStore.UI.Services
         {
             return await SendAsync<T>(new ApiRequest()
             {
-                ApiType = SD.ApiType.DELETE,               
-                ApiUrl =   $"{SD.ProductsApiUrl}/api/product/{id}",
+                ApiType = SD.ApiType.DELETE,
+                ApiUrl = $"{SD.ProductsApiUrl}/api/products/{id}",
                 AccessToken = token
 
             });
@@ -38,7 +38,7 @@ namespace SmartStore.UI.Services
             return await SendAsync<T>(new ApiRequest()
             {
                 ApiType = SD.ApiType.GET,
-                ApiUrl = $"{SD.ProductsApiUrl}/api/product/",
+                ApiUrl = $"{SD.ProductsApiUrl}/api/products/",
                 AccessToken = token
 
             });
@@ -49,7 +49,7 @@ namespace SmartStore.UI.Services
             return await SendAsync<T>(new ApiRequest()
             {
                 ApiType = SD.ApiType.GET,
-                ApiUrl = $"{SD.ProductsApiUrl}/api/product/{id}",
+                ApiUrl = $"{SD.ProductsApiUrl}/api/products/{id}",
                 AccessToken = token
 
             });
@@ -61,7 +61,7 @@ namespace SmartStore.UI.Services
             {
                 ApiType = SD.ApiType.PUT,
                 Data = productDto,
-                ApiUrl = $"{SD.ProductsApiUrl}/api/product/",
+                ApiUrl = $"{SD.ProductsApiUrl}/api/products",
                 AccessToken = token
             });
         }
@@ -72,7 +72,7 @@ namespace SmartStore.UI.Services
             {
                 ApiType = SD.ApiType.PUT,
                 Data = cartDetailsDtos,
-                ApiUrl = $"{SD.ProductsApiUrl}/api/product/UpdateQuantity",
+                ApiUrl = $"{SD.ProductsApiUrl}/api/products/UpdateQuantity",
                 AccessToken = token
             });
         }
