@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartStore.ProductsAPI.Data;
 using SmartStore.ProductsAPI.Dtos;
 using SmartStore.ProductsAPI.Entities;
+using SmartStore.ProductsAPI.Helpers;
 using SmartStore.UI.Dtos.Cart;
 
 namespace SmartStore.ProductsAPI.Repository
@@ -10,29 +11,34 @@ namespace SmartStore.ProductsAPI.Repository
 
     public class ProductRepository : IProductRepository
     {
-        private readonly ProductsDbContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly DbContextOptions<ProductsDbContext> _Context;
 
-        public ProductRepository(ProductsDbContext dbContext, IMapper mapper)
+
+        public ProductRepository(DbContextOptions<ProductsDbContext> context)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _Context = context;
+            //_mapper = new Mapper(new MappingProfile());
         }
-        public async Task<IEnumerable<ProductDto>> GetProducts()
+        public async Task<IEnumerable<Product>> GetProducts()
         {
+            using var _dbContext = new ProductsDbContext(_Context);
             var products = await _dbContext.Products.ToListAsync();
-            return _mapper.Map<IEnumerable<ProductDto>>(products);
+            return products;
         }
-        public async Task<ProductDto> GetProductById(int productId)
+        public async Task<Product> GetProductById(int productId)
         {
+            using var _dbContext = new ProductsDbContext(_Context);
+
             var product = await _dbContext.Products.FindAsync(productId);
-            return _mapper.Map<ProductDto>(product);
+            return product;
 
         }
-        public async Task<ProductDto> UpsertProduct(ProductDto productDto)
+        public async Task<Product> UpsertProduct(Product product)
         {
-            var product=_mapper.Map<ProductDto,Product>(productDto);
-            if(product.Id>0)
+            using var _dbContext = new ProductsDbContext(_Context);
+
+
+            if (product.Id > 0)
             {
                 _dbContext.Products.Update(product);
             }
@@ -43,11 +49,13 @@ namespace SmartStore.ProductsAPI.Repository
 
             await _dbContext.SaveChangesAsync();
 
-            return _mapper.Map<Product,ProductDto>(product);    
+            return product;
         }
 
         public async Task<bool> DeleteProduct(int productId)
         {
+            using var _dbContext = new ProductsDbContext(_Context);
+
             try
             {
                 var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
@@ -61,13 +69,14 @@ namespace SmartStore.ProductsAPI.Repository
             catch (Exception)
             {
                 return false;
-                
+
             }
         }
 
         public async Task<bool> UpdateQuantity(IEnumerable<CartDetailsDto> cartDetailsDtos)
         {
-            
+            using var _dbContext = new ProductsDbContext(_Context);
+
             try
             {
                 foreach (var cartDetails in cartDetailsDtos)
@@ -86,6 +95,31 @@ namespace SmartStore.ProductsAPI.Repository
                 return false;
             }
 
+        }
+
+        public async Task<bool> UpdateProductQuantity(ProductUpdateMessageDto productUpdateMessageDto)
+        {
+            using var _dbContext = new ProductsDbContext(_Context);
+
+            try
+            {
+
+                foreach (var orderDetail in productUpdateMessageDto.OrderDetails)
+                {
+                    var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == orderDetail.ProductId);
+                    if (product == null) return false;
+
+                    product.Quantity -= orderDetail.Count;
+                }
+                await _dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
         }
     }
 

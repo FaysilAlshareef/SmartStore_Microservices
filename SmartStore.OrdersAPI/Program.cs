@@ -5,8 +5,10 @@ using SmartStore.MessageBus;
 using SmartStore.MessageBus.Interfaces;
 using SmartStore.OrdersAPI.Data;
 using SmartStore.OrdersAPI.Extensions;
+using SmartStore.OrdersAPI.RabbitMQSender;
 using SmartStore.OrdersAPI.Repository;
 using SmartStore.OrdersAPI.Services;
+
 
 namespace SmartStore.OrdersAPI
 {
@@ -22,11 +24,14 @@ namespace SmartStore.OrdersAPI
 
             var optionBuilder = new DbContextOptionsBuilder<OrdersDbContext>();
             optionBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-           
+
+            builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
+            builder.Services.AddHostedService<RabbitMQPaymentConsumer>();
+
             builder.Services.AddSingleton(new OrderRepository(optionBuilder.Options));
             builder.Services.AddSingleton<IAzureServiceBusConsumer, AzureServiceBusConsumer>();
             builder.Services.AddSingleton<IMessageBus, AzureServiceBus>();
-
+            builder.Services.AddSingleton<IRabbitMQPaymentRequestMessageSender, RabbitMQPaymentRequestMessageSender>();
             builder.Services.AddControllers()
 
                ;

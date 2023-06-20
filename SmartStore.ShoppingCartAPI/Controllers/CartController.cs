@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartStore.MessageBus.Interfaces;
 using SmartStore.ShoppingCartAPI.Dtos;
 using SmartStore.ShoppingCartAPI.Messages;
+using SmartStore.ShoppingCartAPI.RabbitMQSender;
 using SmartStore.ShoppingCartAPI.Repository;
 
 namespace SmartStore.ShoppingCartAPI.Controllers
@@ -16,13 +17,15 @@ namespace SmartStore.ShoppingCartAPI.Controllers
         private readonly ICouponRepository _couponRepository;
         private readonly ShoppingCartResponseDto _response;
         private readonly IConfiguration _configuration;
+        private readonly IRabbitMQCheckoutMessageSender _rabbitMQCheckoutMessageSender;
 
         public CartController(
             ICartRepository cartRepository,
             IMessageBus messageBus,
             ICouponRepository couponRepository,
             ShoppingCartResponseDto response,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IRabbitMQCheckoutMessageSender rabbitMQCheckoutMessageSender
             )
         {
             _cartRepository = cartRepository;
@@ -30,6 +33,7 @@ namespace SmartStore.ShoppingCartAPI.Controllers
             _couponRepository = couponRepository;
             _response = response;
             _configuration = configuration;
+            _rabbitMQCheckoutMessageSender = rabbitMQCheckoutMessageSender;
         }
 
         [HttpGet("GetCart/{userId}")]
@@ -211,7 +215,9 @@ namespace SmartStore.ShoppingCartAPI.Controllers
                 checkoutMessageDto.TopicName = _configuration["CheckoutMessageQueue"];
                 var message = new List<MessageBus.BaseMessage>();
                 message.Add(checkoutMessageDto);
-                await _messageBus.PublishMessage(message);
+                //await _messageBus.PublishMessage(message);
+                //RabbitMQ
+                _rabbitMQCheckoutMessageSender.SendMessage(checkoutMessageDto, "CheckoutMessageQueue");
                 await _cartRepository.ClearCart(checkoutMessageDto.UserId);
             }
             catch (Exception e)

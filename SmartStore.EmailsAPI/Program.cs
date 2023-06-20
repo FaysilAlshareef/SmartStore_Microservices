@@ -31,7 +31,7 @@ namespace SmartStore.EmailsAPI
             builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<SmartStore.EmailsAPI.Services.IAzureServiceBusConsumer, AzureServiceBusConsumer>();
             builder.Services.AddSingleton(new EmailRepository(OptionBuilder.Options));
-
+            builder.Services.AddHostedService<RabbitMQPaymentConsumer>();
 
 
             var app = builder.Build();

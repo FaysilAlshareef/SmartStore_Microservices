@@ -24,7 +24,7 @@ public class Program
         var app = builder.Build();
 
         //app.MapGet("/", () => "Hello World!");
-        app.UseAuthentication();
+        //app.UseAuthentication();
         app.UseOcelot();
         app.Run();
     }

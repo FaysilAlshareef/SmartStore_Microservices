@@ -1,6 +1,7 @@
 using SmartStore.MessageBus;
 using SmartStore.MessageBus.Interfaces;
 using SmartStore.PaymentsAPI.Extensions;
+using SmartStore.PaymentsAPI.RabbitMQSender;
 using SmartStore.PaymentsAPI.Repository;
 using SmartStore.PaymentsAPI.Services;
 
@@ -17,9 +18,10 @@ namespace SmartStore.PaymentsAPI
 
             builder.Services.AddStripeInfrastructure(builder.Configuration);
             builder.Services.AddSingleton<IPaymentProcessor, PaymentProcessor>();
-            builder.Services.AddSingleton<IAzureServiceBusConsumer, AzureServiceBusConsumer>(); 
-            builder.Services.AddSingleton<IMessageBus,AzureServiceBus>();  
-           
+            builder.Services.AddSingleton<IAzureServiceBusConsumer, AzureServiceBusConsumer>();
+            builder.Services.AddSingleton<IMessageBus, AzureServiceBus>();
+            builder.Services.AddSingleton<IRabbitMQPaymentResultMessageSender, RabbitMQPaymentResultMessageSender>();
+            builder.Services.AddHostedService<RabbitMQPaymentConsumer>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

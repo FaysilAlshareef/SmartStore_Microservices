@@ -7,6 +7,7 @@ using SmartStore.ShoppingCartAPI.Dtos;
 using SmartStore.ShoppingCartAPI.Helpers;
 using SmartStore.ShoppingCartAPI.Repository;
 using SmartStore.ShoppingCartAPI.ShoppingCartData;
+using SmartStore.ShoppingCartAPI.RabbitMQSender;
 
 namespace SmartStore.ShoppingCartAPI
 {
@@ -19,8 +20,8 @@ namespace SmartStore.ShoppingCartAPI
             // Add services to the container.
 
             //Allow Dependancy injection for RedisDbContext
-            
-            builder.Services.AddDbContext<ShoppingCartDbContext> (options =>
+
+            builder.Services.AddDbContext<ShoppingCartDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
@@ -29,12 +30,13 @@ namespace SmartStore.ShoppingCartAPI
             builder.Services.AddScoped(typeof(ICouponRepository), typeof(CouponRepository));
             builder.Services.AddScoped(typeof(ShoppingCartResponseDto));
             builder.Services.AddSingleton<IMessageBus, AzureServiceBus>();
+            builder.Services.AddSingleton<IRabbitMQCheckoutMessageSender, RabbitMQCheckoutMessageSender>();
 
 
             builder.Services.AddControllers();
 
             builder.Services.AddHttpClient<ICouponRepository, CouponRepository>(
-                hc=>hc.BaseAddress=new Uri(builder.Configuration["ApiUrls:CouponApi"])
+                hc => hc.BaseAddress = new Uri(builder.Configuration["ApiUrls:CouponApi"])
                 );
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

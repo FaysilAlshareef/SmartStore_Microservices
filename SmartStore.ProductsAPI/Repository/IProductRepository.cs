@@ -1,17 +1,19 @@
 ﻿using SmartStore.ProductsAPI.Dtos;
+using SmartStore.ProductsAPI.Entities;
 using SmartStore.UI.Dtos.Cart;
 
 namespace SmartStore.ProductsAPI.Repository
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<ProductDto>> GetProducts();
+        Task<IEnumerable<Product>> GetProducts();
 
-        Task<ProductDto> GetProductById(int productId);
+        Task<Product> GetProductById(int productId);
 
-        Task<ProductDto> UpsertProduct(ProductDto productDto);
+        Task<Product> UpsertProduct(Product productDto);
 
         Task<bool> UpdateQuantity(IEnumerable<CartDetailsDto> cartDetailsDtos);
         Task<bool> DeleteProduct(int productId);
+        Task<bool> UpdateProductQuantity(ProductUpdateMessageDto productUpdateMessageDto);
     }
 }

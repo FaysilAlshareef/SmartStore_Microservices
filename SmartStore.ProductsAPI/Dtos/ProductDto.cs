@@ -13,12 +13,12 @@ namespace SmartStore.ProductsAPI.Dtos
         [Required]
         [Range(1, double.MaxValue)]
         public decimal Price { get; set; }
-        public string PictureUrl { get; set; }
+        public string? PictureUrl { get; set; }
         [Required]
         [Range(1, double.MaxValue)]
         public decimal Quantity { get; set; }
         [Required]
         public string Category { get; set; }
-        
+
     }
 }

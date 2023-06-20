@@ -81,7 +81,9 @@ namespace SmartStore.UI.Controllers
                     return BadRequest();
 
                 var accessToken = await HttpContext.GetTokenAsync("access_token");
-
+                var imageUrl = await _blobService
+                        .UploadBlob(productDto.Image.FileName, productDto.Image, "images");
+                productDto.PictureUrl = imageUrl;
                 var response = await _productService.UpdateAsync<ResponseDto>(productDto, accessToken);
                 if (response != null && response.IsSuccess)
                 {

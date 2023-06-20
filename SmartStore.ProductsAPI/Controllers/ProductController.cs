@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartStore.ProductsAPI.Dtos;
+using SmartStore.ProductsAPI.Entities;
 using SmartStore.ProductsAPI.Repository;
 using SmartStore.UI.Dtos.Cart;
 
@@ -11,12 +13,14 @@ namespace SmartStore.ProductsAPI.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductRepository _productRepository;
+        private readonly ProductRepository _productRepository;
+        private readonly IMapper _mapper;
         private ProductResponseDto _responseDto;
 
-        public ProductsController(IProductRepository productRepository)
+        public ProductsController(ProductRepository productRepository, IMapper mapper)
         {
             _productRepository = productRepository;
+            _mapper = mapper;
             _responseDto = new ProductResponseDto();
         }
         //Get All Products /api/products
@@ -25,10 +29,10 @@ namespace SmartStore.ProductsAPI.Controllers
         {
             try
             {
-                IEnumerable<ProductDto> productDtos =
+                IEnumerable<Product> product =
                     await _productRepository.GetProducts();
 
-                _responseDto.Result = productDtos;
+                _responseDto.Result = _mapper.Map<IEnumerable<ProductDto>>(product);
             }
             catch (Exception ex)
             {
@@ -43,14 +47,14 @@ namespace SmartStore.ProductsAPI.Controllers
 
         //Get Single Product /api/products/1
         [HttpGet]
-        [Route("{id}")]        
+        [Route("{id}")]
         public async Task<object> GetProduct(int id)
         {
             try
             {
-                ProductDto productDto = await _productRepository.GetProductById(id);
+                Product product = await _productRepository.GetProductById(id);
 
-                _responseDto.Result = productDto;
+                _responseDto.Result = _mapper.Map<ProductDto>(product);
             }
             catch (Exception ex)
             {
@@ -65,16 +69,16 @@ namespace SmartStore.ProductsAPI.Controllers
 
         //Insert New Product /api/products
         [HttpPost]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<object> CreateProduct(ProductDto productDto)
         {
             try
             {
                 if (productDto.Id == 0)
                 {
-                    ProductDto model = await _productRepository.UpsertProduct(productDto);
+                    Product model = await _productRepository.UpsertProduct(_mapper.Map<Product>(productDto));
 
-                    _responseDto.Result = model;
+                    _responseDto.Result = _mapper.Map<ProductDto>(model);
                     _responseDto.DisplayMessage = "Product has been created";
                 }
                 else
@@ -106,9 +110,9 @@ namespace SmartStore.ProductsAPI.Controllers
             {
                 if (productDto.Id > 0)
                 {
-                    ProductDto model = await _productRepository.UpsertProduct(productDto);
+                    Product model = await _productRepository.UpsertProduct(_mapper.Map<Product>(productDto));
 
-                    _responseDto.Result = model;
+                    _responseDto.Result = _mapper.Map<ProductDto>(model);
                     _responseDto.DisplayMessage = "Product has been updated";
                 }
                 else
@@ -136,7 +140,7 @@ namespace SmartStore.ProductsAPI.Controllers
         {
             try
             {
-              var result=  _productRepository.UpdateQuantity(cartDetailsDtos);
+                var result = _productRepository.UpdateQuantity(cartDetailsDtos);
                 return true;
             }
             catch (Exception ex)

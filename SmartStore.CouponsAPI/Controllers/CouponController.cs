@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartStore.CouponsAPI.Dtos;
 using SmartStore.CouponsAPI.Repository;
@@ -17,6 +18,7 @@ namespace SmartStore.CouponsAPI.Controllers
             _couponRepository = couponRepository;
             _response = response;
         }
+        [Authorize]
 
         [HttpGet]
         public async Task<ActionResult<CouponResponseDto>> GetAllCoupons()
@@ -57,7 +59,7 @@ namespace SmartStore.CouponsAPI.Controllers
             }
             return _response;
         }
-
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<CouponResponseDto>> CreateCoupon(CouponDto couponDto)
         {
@@ -72,7 +74,7 @@ namespace SmartStore.CouponsAPI.Controllers
                 {
                     _response.IsSuccess = false;
                     _response.ErrorMessages.Add("Coupon Code is Exist");
-                    
+
                 }
             }
             catch (Exception e)
@@ -86,6 +88,7 @@ namespace SmartStore.CouponsAPI.Controllers
             }
             return _response;
         }
+        [Authorize]
 
         [HttpPut]
         public async Task<ActionResult<CouponResponseDto>> UpdateNumberOfCoupon(CouponCountDetailsDto couponCountDetailsDto)
@@ -106,6 +109,8 @@ namespace SmartStore.CouponsAPI.Controllers
             }
             return _response;
         }
+        [Authorize]
+
         [HttpDelete("{couponCode}")]
         public async Task<ActionResult<CouponResponseDto>> DeleteCoupon(string couponCode)
         {

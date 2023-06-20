@@ -1,7 +1,9 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SmartStore.OrdersAPI.Services;
 using SmartStore.ProductsAPI.Data;
 using SmartStore.ProductsAPI.Helpers;
 using SmartStore.ProductsAPI.Repository;
@@ -20,12 +22,16 @@ namespace SmartStore.ProductsAPI
             // Add services to the container.
 
             // Register ProductsDbContext 
-            builder.Services.AddDbContext<ProductsDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
+            //builder.Services.AddDbContext<ProductsDbContext>(options =>
+            //{
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            //});
+            var optionBuilder = new DbContextOptionsBuilder<ProductsDbContext>();
+            optionBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
             builder.Services.AddAutoMapper(typeof(MappingProfile));
-            builder.Services.AddScoped(typeof(IProductRepository), typeof(ProductRepository));
+            builder.Services.AddSingleton(new ProductRepository(optionBuilder.Options));
+            builder.Services.AddHostedService<RabbitMQPaymentConsumer>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -78,7 +84,7 @@ namespace SmartStore.ProductsAPI
                         new List<string>()
                         }
                     });
-                            });
+            });
 
 
             var app = builder.Build();
